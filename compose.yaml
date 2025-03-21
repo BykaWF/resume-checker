@@ -1,11 +1,24 @@
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - SPRING_AI_API_KEY=${SPRING_AI_API_KEY}
+        - SPRING_AI_COMPLETION_URL=${SPRING_AI_COMPLETION_URL}
+        - SPRING_AI_BASE_URL=${SPRING_AI_BASE_URL}
+        - RAILWAY_DATABASE_URL=${RAILWAY_DATABASE_URL}
+        - RAILWAY_DATABASE_USERNAME=${RAILWAY_DATABASE_USERNAME}
+        - RAILWAY_DATABASE_PASSWORD=${RAILWAY_DATABASE_PASSWORD}
     container_name: resume-checker
     ports:
       - "8080:8080"
-    env_file:
-      - .env
+    environment:
+      - SPRING_AI_API_KEY=${SPRING_AI_API_KEY}
+      - SPRING_AI_COMPLETION_URL=${SPRING_AI_COMPLETION_URL}
+      - SPRING_AI_BASE_URL=${SPRING_AI_BASE_URL}
+      - RAILWAY_DATABASE_URL=${RAILWAY_DATABASE_URL}
+      - RAILWAY_DATABASE_USERNAME=${RAILWAY_DATABASE_USERNAME}
+      - RAILWAY_DATABASE_PASSWORD=${RAILWAY_DATABASE_PASSWORD}
     restart: unless-stopped
