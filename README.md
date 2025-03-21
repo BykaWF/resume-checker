@@ -1,30 +1,32 @@
 # 📝 Resume Checker  
 
 ## 📌 Overview  
-RAG Resume Checker is an AI-powered application that analyzes resumes and detects **common mistakes** to help job seekers improve their applications.
+Resume Checker is an AI-powered tool designed to help job seekers enhance their resumes and cover letters. It analyzes resumes and compares them to top industry standards, identifies common mistakes, and provides actionable suggestions for improvement. Additionally, the application generates personalized cover letters based on job descriptions to help users create compelling applications.
 
 ## 🚀 Features  
-- **Common Mistake Detection**: Identifies issues like missing skills, poor formatting, vague descriptions, or keyword mismatches.  
-- **AI-Powered Resume Analysis**: Uses **Spring AI** with **Mistral AI** for intelligent feedback.  
-- **Vector Search for Matching**: Implements **Pgvector** for semantic job-resume comparison.  
-- **Personalized Suggestions**: Helps refine resumes based on industry best practices.  
-- **Fast & Scalable**: Built with **Java + Spring Boot**, ensuring reliability and performance.  
+- **Resume & Job Description Analysis**: Matches your resume with top industry standards and ensures alignment with job descriptions.  
+- **Resume Review & Comparison**: Analyzes resumes and highlights common mistakes like missing skills, formatting issues, vague descriptions, or mismatches with job descriptions.  
+- **AI-Powered Resume Feedback**: Utilizes **Spring AI** and **Ollama** to offer detailed feedback and suggestions for improvement.  
+- **Cover Letter Generation**: Automatically generates a personalized cover letter based on the provided job description.  
+- **Job Resume Alignment**: Helps ensure your resume is optimized for specific job listings using advanced semantic comparison.  
+- **Fast & Scalable**: Deployed on **Google Cloud Run** for reliability and scalability, ensuring high performance with minimal setup.
 
 ## 🛠️ Tech Stack  
-- **Java 17+**  
+- **Java 23**  
 - **Spring Boot + Spring AI**  
-- **Mistral AI** (for LLM-based resume analysis)  
-- **PostgreSQL + Pgvector** (for semantic search)  
-- **Docker** (for containerized deployment)  
+- **Ollama** (for AI-based resume analysis)  
+- **PostgreSQL + Pgvector** (for semantic search and comparison)  
+- **Google Cloud Run** (for serverless, scalable deployment)  
+- **Docker** (for containerized deployment)
 
 ## 🏃 Usage
 Send a request to analyze a resume
 ```
-POST /api/resume/analyze  
+POST /api/v1/resume/analyze  
 Content-Type: application/json  
 
 {
-  "resumeText": "Your resume content here"
+  "job description": "Your resume content here"
 }
 
 ```
