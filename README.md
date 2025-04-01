@@ -1,5 +1,5 @@
-# 📝 Resume Checker  
-
+# 📝 Resume Checker
+![First-Vesion-LP](https://github.com/user-attachments/assets/d973f8fe-9857-4556-9486-f346307de9d0)
 ## 📌 Overview  
 Resume Checker is an AI-powered tool designed to help job seekers enhance their resumes and cover letters. It analyzes resumes and compares them to top industry standards, identifies common mistakes, and provides actionable suggestions for improvement. Additionally, the application generates personalized cover letters based on job descriptions to help users create compelling applications.
 
