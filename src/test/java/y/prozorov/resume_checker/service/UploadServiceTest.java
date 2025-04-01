@@ -11,32 +11,37 @@ import y.prozorov.resume_checker.model.Resume;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UploadServiceTest {
     @InjectMocks
-    private UploadService uploadService; // Your class with uploadFile method
+    private UploadService uploadService;
 
     @Mock
-    private ResumeService resumeService; // Mock the ResumeService
+    private ResumeService resumeService;
 
     @Mock
-    private MultipartFile file; // Mock the MultipartFile
+    private MultipartFile file;
+
+    private UUID userId;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         MockitoAnnotations.openMocks(this);
+        userId = UUID.randomUUID();
     }
     @Test
-    void testUploadFileSuccess() throws IOException {
+    void testUploadFileSuccess_NewResume() throws IOException {
         // Given
         String resumeText = "This is a dummy resume text";
-        Resume mockedResume = Resume.builder()
-                .userId(UUID.randomUUID())
+        Resume newResume = Resume.builder()
+                .userId(userId)
                 .resumeText(resumeText)
                 .build();
 
@@ -45,24 +50,27 @@ class UploadServiceTest {
         when(file.getSize()).thenReturn(1024L);
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(resumeText.getBytes()));
 
-        when(resumeService.save(any(Resume.class))).thenReturn(mockedResume);
+        when(resumeService.findByUserId(userId)).thenReturn(Optional.empty());
+        when(resumeService.save(any(Resume.class))).thenReturn(newResume);
 
         // When
-        Resume result = uploadService.uploadFile(file);
+        Resume result = uploadService.uploadFile(file, userId);
 
         // Then
         assertNotNull(result);
-        assertEquals(mockedResume.getResumeText(), result.getResumeText());
-        assertEquals(mockedResume.getUserId(), result.getUserId());
-    }
+        assertEquals(resumeText, result.getResumeText());
+        assertEquals(userId, result.getUserId());
 
+        verify(resumeService).findByUserId(userId);
+        verify(resumeService).save(any(Resume.class));
+    }
     @Test
     void testUploadFileNoFileProvided() {
         // Given
         when(file.isEmpty()).thenReturn(true);
 
         // When & Then
-        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file));
+        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file, userId));
         assertEquals("No file provided.", exception.getMessage());
     }
 
@@ -73,8 +81,8 @@ class UploadServiceTest {
         when(file.getContentType()).thenReturn("text/plain");
 
         // When & Then
-        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file));
-        assertEquals("Invalid file type.", exception.getMessage());
+        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file, userId));
+        assertEquals("Invalid file type. Only PDF is allowed.", exception.getMessage());
     }
 
     @Test
@@ -82,10 +90,22 @@ class UploadServiceTest {
         // Given
         when(file.isEmpty()).thenReturn(false);
         when(file.getContentType()).thenReturn("application/pdf");
-        when(file.getSize()).thenReturn(10 * 1024 * 1024L);
+        when(file.getSize()).thenReturn(10 * 1024 * 1024L); // 10MB
 
         // When & Then
-        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file));
-        assertEquals("File size exceeds the limit.", exception.getMessage());
+        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file, userId));
+        assertEquals("File size exceeds the limit (5MB).", exception.getMessage());
+    }
+
+    @Test
+    void testUploadFileNullUserId() {
+        // Given
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getSize()).thenReturn(1024L);
+
+        // When & Then
+        FileUploadException exception = assertThrows(FileUploadException.class, () -> uploadService.uploadFile(file, null));
+        assertEquals("User ID is required.", exception.getMessage());
     }
 }

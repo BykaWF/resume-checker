@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import y.prozorov.resume_checker.exception.FileUploadException;
 import y.prozorov.resume_checker.model.Resume;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -22,8 +24,14 @@ public class UploadService {
         this.resumeService = resumeService;
     }
 
-    public Resume uploadFile(MultipartFile file) {
-        log.info("Starting file upload process...");
+    @Transactional
+    public Resume uploadFile(MultipartFile file, UUID userId) {
+        log.info("Starting file upload process for user: {}", userId);
+
+        if (userId == null) {
+            log.error("User ID cannot be null.");
+            throw new FileUploadException("User ID is required.");
+        }
 
         if (file.isEmpty()) {
             log.error("No file provided.");
@@ -34,12 +42,12 @@ public class UploadService {
 
         if (!isValidFileType(file)) {
             log.error("Invalid file type: {}", file.getContentType());
-            throw new FileUploadException("Invalid file type.");
+            throw new FileUploadException("Invalid file type. Only PDF is allowed.");
         }
 
-        if (file.getSize() > 5 * 1024 * 1024) { // 5MB
+        if (file.getSize() > 5 * 1024 * 1024) { // 5MB limit
             log.error("File size exceeds the limit: {} bytes", file.getSize());
-            throw new FileUploadException("File size exceeds the limit.");
+            throw new FileUploadException("File size exceeds the limit (5MB).");
         }
 
         try {
@@ -48,28 +56,38 @@ public class UploadService {
             String resumeText = tika.parseToString(file.getInputStream());
             log.info("File text extracted successfully.");
 
-            Resume resume = Resume.builder()
-                    .userId(UUID.randomUUID())
-                    .resumeText(resumeText)
-                    .build();
+            Optional<Resume> existingResume = resumeService.findByUserId(userId);
 
-            log.info("Saving the resume to the database...");
+            Resume resume;
+            if (existingResume.isPresent()) {
+                log.info("Existing resume found for user {}. Updating resume.", userId);
+                resume = existingResume.get();
+                resume.setResumeText(resumeText);
+            } else {
+                log.info("No existing resume found for user {}. Creating new resume entry.", userId);
+                resume = Resume.builder()
+                        .userId(userId)
+                        .resumeText(resumeText)
+                        .build();
+            }
+
             Resume savedResume = resumeService.save(resume);
-            log.info("File uploaded and resume saved with ID: {}", savedResume.getUserId());
+            log.info("File uploaded and resume saved with ID: {}", savedResume.getId());
 
             return savedResume;
 
         } catch (IOException e) {
             log.error("IOException while processing the file: {}", e.getMessage(), e);
-            throw new FileUploadException("Error uploading the file.");
+            throw new FileUploadException("Error processing the file.");
         } catch (TikaException e) {
             log.error("TikaException while extracting text from the file: {}", e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new FileUploadException("Error extracting text from the file.");
         }
     }
 
     private boolean isValidFileType(MultipartFile file) {
         return Objects.equals(file.getContentType(), "application/pdf");
     }
+
 }
 

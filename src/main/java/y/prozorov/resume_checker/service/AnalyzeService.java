@@ -9,6 +9,8 @@ import y.prozorov.resume_checker.exception.AnalyzeResumeException;
 import y.prozorov.resume_checker.model.Suggestion;
 
 import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class AnalyzeService {
@@ -22,7 +24,7 @@ public class AnalyzeService {
         this.ollamaClient = ollamaClient;
     }
 
-    public List<Suggestion> analyzeResume(AnalyzeResumeRequest request, String userId) {
+    public List<Suggestion> analyzeResume(AnalyzeResumeRequest request, UUID userId) {
         log.info("Starting resume analysis for user ID: {}", userId);
 
         try {

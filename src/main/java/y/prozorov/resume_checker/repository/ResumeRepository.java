@@ -10,4 +10,7 @@ import java.util.UUID;
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     Optional<Resume> findByUserId(UUID uuid);
+
+
+    boolean existsByUserId(UUID userId);
 }
