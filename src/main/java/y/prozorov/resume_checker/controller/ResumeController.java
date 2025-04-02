@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/resume")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin("${allowed.origins}")
 public class ResumeController {
 
     private final AnalyzeService analyzeService;

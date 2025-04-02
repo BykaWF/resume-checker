@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/upload")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin("${allowed.origins}")
 public class UploadController {
 
     private final UploadService uploadService;
