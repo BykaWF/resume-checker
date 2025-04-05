@@ -16,9 +16,9 @@ public class GlobalExceptionHandler {
                 .body(ResponseUtil.error("Failed to upload resume",e.getMessage()));
     }
 
-    @ExceptionHandler(AnalyzeResumeException.class)
-    public ResponseEntity<ApiResponse<String>> handleAnalyzeException(AnalyzeResumeException e) {
+    @ExceptionHandler(GenerateResponseException.class)
+    public ResponseEntity<ApiResponse<String>> handleAnalyzeException(GenerateResponseException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ResponseUtil.error("Failed to analyze resume",e.getMessage()));
+                .body(ResponseUtil.error("Failed to generate response",e.getMessage()));
     }
 }

@@ -3,6 +3,6 @@ package y.prozorov.resume_checker.dto;
 import lombok.Data;
 
 @Data
-public class AnalyzeResumeRequest {
+public class ApplicationContentRequest {
     private String jobDescription;
 }

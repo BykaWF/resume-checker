@@ -1,4 +1,4 @@
-package y.prozorov.resume_checker.client;
+package y.prozorov.resume_checker.chat;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,11 @@ import y.prozorov.resume_checker.util.ResponseParser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Component
-public class OllamaClient {
+public class ChatClient {
 
     @Value("${spring.ai.completion-url}")
     private String COMPLETION_URL;
@@ -25,15 +26,14 @@ public class OllamaClient {
     private final RestClient restClient;
 
     @Autowired
-    public OllamaClient(RestClient restClient) {
+    public ChatClient(RestClient restClient) {
         this.restClient = restClient;
     }
 
 
     public List<Suggestion> fetchSuggestions(String prompt) {
-
-        ChatRequest requestPayload = new ChatRequest(List.of(new Message("user", prompt)));
-
+        var requestPayload = new ChatRequest(List.of(new Message("user", prompt)));
+        //TODO swap with ChatResponse and change util method
         ResponseEntity<Map<String, Object>> response = restClient.post()
                 .uri(COMPLETION_URL)
                 .header("Authorization", "Bearer " + API_KEY)
@@ -42,12 +42,22 @@ public class OllamaClient {
                 .retrieve()
                 .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
                 });
+
         return ResponseParser.parseSuggestions(response);
     }
 
-    public record ChatRequest(List<Message> messages) {
+    public String fetchCoverLetter(String prompt) {
+        var requestPayload = new ChatRequest(List.of(new Message("user", prompt)));
+
+        ResponseEntity<ChatResponse> response = restClient.post()
+                .uri(COMPLETION_URL)
+                .header("Authorization", "Bearer " + API_KEY)
+                .header("Content-Type", "application/json")
+                .body(requestPayload)
+                .retrieve()
+                .toEntity(ChatResponse.class);
+
+        return Objects.requireNonNull(response.getBody()).getContent();
     }
 
-    public record Message(String role, String content) {
-    }
 }

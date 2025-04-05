@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Service
 public class ResumeService {
+
     private final ResumeRepository resumeRepository;
 
     public ResumeService(ResumeRepository resumeRepository) {

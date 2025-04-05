@@ -6,16 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-import y.prozorov.resume_checker.dto.AnalyzeResumeRequest;
 import y.prozorov.resume_checker.dto.ApiResponse;
+import y.prozorov.resume_checker.dto.ApplicationContentRequest;
 import y.prozorov.resume_checker.model.Suggestion;
-import y.prozorov.resume_checker.service.AnalyzeService;
+import y.prozorov.resume_checker.service.ChatService;
 import y.prozorov.resume_checker.service.ResumeService;
 import y.prozorov.resume_checker.util.JwtUtil;
 import y.prozorov.resume_checker.util.ResponseUtil;
 
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -23,31 +22,31 @@ import java.util.UUID;
 @CrossOrigin("${allowed.origins}")
 public class ResumeController {
 
-    private final AnalyzeService analyzeService;
+    private final ChatService ChatService;
     private final ResumeService resumeService;
     private final JwtUtil jwtUtil;
 
-    public ResumeController(AnalyzeService analyzeService, ResumeService resumeService, JwtUtil jwtUtil) {
-        this.analyzeService = analyzeService;
+    public ResumeController(ChatService ChatService, ResumeService resumeService, JwtUtil jwtUtil) {
+        this.ChatService = ChatService;
         this.resumeService = resumeService;
         this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/check-resume")
     public ResponseEntity<ApiResponse<Boolean>> existResume(@AuthenticationPrincipal Jwt jwt) {
-        UUID userId = jwtUtil.extractUserId(jwt);
+        var userId = jwtUtil.extractUserId(jwt);
         var hasResume = resumeService.hasResume(userId);
-        String message = hasResume ? "Resume exist" : "Resume doesn't exist";
+        var message = hasResume ? "Resume exist" : "Resume doesn't exist";
         return ResponseEntity.status(HttpStatus.OK).body(ResponseUtil.success(message, hasResume, null));
     }
 
     @PostMapping("/analyze")
     public ResponseEntity<ApiResponse<List<Suggestion>>> analyzeResume(
-            @RequestBody AnalyzeResumeRequest request,
+            @RequestBody ApplicationContentRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        UUID userId = jwtUtil.extractUserId(jwt);
-        List<Suggestion> suggestions = analyzeService.analyzeResume(request, userId);
+        var userId = jwtUtil.extractUserId(jwt);
+        var suggestions = ChatService.generateSuggestions(request, userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseUtil.success("Resume analyzed", suggestions, null));
     }

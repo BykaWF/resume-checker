@@ -21,8 +21,7 @@ public class CoverLetter {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Lob
-    @Column(name = "letter_text", nullable = false)
+    @Column(name = "letter_text", nullable = false, columnDefinition = "TEXT")
     private String letterText;
 
     @CreationTimestamp
