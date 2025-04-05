@@ -53,7 +53,7 @@ public class UploadService {
         try {
             log.info("Extracting text from the file...");
             var tika = new Tika();
-            String resumeText = tika.parseToString(file.getInputStream());
+            var resumeText = tika.parseToString(file.getInputStream());
             log.info("File text extracted successfully.");
 
             Optional<Resume> existingResume = resumeService.findByUserId(userId);
@@ -71,7 +71,7 @@ public class UploadService {
                         .build();
             }
 
-            Resume savedResume = resumeService.save(resume);
+            var savedResume = resumeService.save(resume);
             log.info("File uploaded and resume saved with ID: {}", savedResume.getId());
 
             return savedResume;
