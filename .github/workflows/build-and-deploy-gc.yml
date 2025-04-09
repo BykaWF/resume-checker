@@ -54,6 +54,7 @@ jobs:
             --build-arg ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }} \
             --build-arg AUTH_ISSUER_URI=${{ secrets.AUTH_ISSUER_URI }} \
             --build-arg AUTH_JWK_SET_URI=${{ secrets.AUTH_JWK_SET_URI }} .
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-central2-docker.pkg.dev
           docker push "${DOCKER_TAG}"
       - name: 'Deploy to Cloud Run'
 
