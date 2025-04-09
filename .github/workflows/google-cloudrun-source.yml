@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  PROJECT_ID: ${{ GCP_PROJECT_ID }} 
+  PROJECT_ID: ${{ GCP_PROJECT_ID }}
   REGION: ${{ GCP_REGION }}
   SERVICE: ${{ GCP_SERVICE_NAME }}
 
