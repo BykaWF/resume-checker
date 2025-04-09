@@ -6,7 +6,6 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-COPY .env .
 
 COPY src src
 
