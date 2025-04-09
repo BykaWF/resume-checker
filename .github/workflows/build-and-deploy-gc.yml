@@ -43,7 +43,7 @@ jobs:
 
       - name: 'Build and Push Container'
         run: |-
-          DOCKER_TAG="$${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          DOCKER_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
           docker build --tag "${DOCKER_TAG}" \
             --build-arg SPRING_AI_API_KEY=${{ secrets.SPRING_AI_API_KEY }} \
             --build-arg SPRING_AI_COMPLETION_URL=${{ secrets.SPRING_AI_COMPLETION_URL }} \
