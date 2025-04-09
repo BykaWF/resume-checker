@@ -33,7 +33,7 @@ public class ChatClient {
 
     public List<Suggestion> fetchSuggestions(String prompt) {
         var requestPayload = new ChatRequest(List.of(new Message("user", prompt)));
-        //TODO swap with ChatResponse and change util method
+        
         ResponseEntity<Map<String, Object>> response = restClient.post()
                 .uri(COMPLETION_URL)
                 .header("Authorization", "Bearer " + API_KEY)
