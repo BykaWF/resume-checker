@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: 'r-checker-454418'
-  REGION: 'europa-central2'
+  REGION: 'europe-central2'
   SERVICE: 'resume-checker'
 
 jobs:
