@@ -1,0 +1,41 @@
+name: 'Deploy to Cloud Run from Source'
+
+on:
+  push:
+    branches:
+      - '"main"'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} 
+  REGION: ${{ secrets.GCP_REGION }}
+  SERVICE: ${{ secrets.GCP_SERVICE_NAME }}
+
+jobs:
+  deploy:
+    runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' 
+        
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@f112390a2df9932162083945e46d439060d66ec2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF }}
+      - name: 'Deploy to Cloud Run'
+        uses: 'google-github-actions/deploy-cloudrun@33553064113a37d688aa6937bacbdc481580be17' 
+        with:
+          service: '${{ env.SERVICE }}'
+          region: '${{ env.REGION }}'
+          # NOTE: If using a different source folder, update the image name below:
+          source: './'
+
+      # If required, use the Cloud Run URL output in later steps
+      - name: 'Show output'
+        run: |-
+          echo ${{ steps.deploy.outputs.url }}
