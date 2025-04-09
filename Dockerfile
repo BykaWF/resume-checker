@@ -20,12 +20,11 @@ ARG ALLOWED_ORIGINS
 ARG AUTH_ISSUER_URI
 ARG AUTH_JWK_SET_URI
 
-# Package the application
+# Package the application 
 RUN ./mvnw package -DskipTests
 
-# Copy the JAR file into the container
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+# Copy the JAR file into the container 
+COPY target/*.jar app.jar
 
 # Set runtime environment variables
 ENV SPRING_AI_API_KEY=${SPRING_AI_API_KEY}
