@@ -6,9 +6,9 @@ on:
       - "main"
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }} 
-  REGION: ${{ secrets.GCP_REGION }}
-  SERVICE: ${{ secrets.GCP_SERVICE_NAME }}
+  PROJECT_ID: 'r-checker' 
+  REGION: 'europa-central2'
+  SERVICE: 'resume-checker'
 
 jobs:
   deploy:
