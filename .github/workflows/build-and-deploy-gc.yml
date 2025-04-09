@@ -36,7 +36,7 @@ jobs:
         uses: 'docker/login-action@v3'
         with:
           username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
+          password: '${{ steps.auth.outputs.auth_token }}'
           registry: '${{ env.REGION }}-docker.pkg.dev'
 
       - name: 'Build and Push Container'
@@ -52,7 +52,7 @@ jobs:
             --build-arg ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }} \
             --build-arg AUTH_ISSUER_URI=${{ secrets.AUTH_ISSUER_URI }} \
             --build-arg AUTH_JWK_SET_URI=${{ secrets.AUTH_JWK_SET_URI }} .
-          # gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ env.REGION }}-docker.pkg.dev
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ env.REGION }}-docker.pkg.dev
           docker push "$DOCKER_TAG"
 
       - name: 'Deploy to Cloud Run'
