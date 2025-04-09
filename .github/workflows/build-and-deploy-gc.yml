@@ -8,7 +8,7 @@ on:
 env:
   PROJECT_ID: 'r-checker-454418' 
   REGION: 'europe-central2' 
-  SERVICE: 'resume-checker-service' 
+  SERVICE: 'resume-chcker' 
   WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WIF }} 
 
 jobs:
