@@ -1,12 +1,14 @@
-FROM eclipse-temurin:23-jdk
+FROM eclipse-temurin:23-jdk AS build
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy necessary files
+# Copy the Maven wrapper and necessary files to the container
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+
+# Copy the source code into the container
 COPY src src
 
 # Set build-time environment variables
@@ -20,11 +22,17 @@ ARG ALLOWED_ORIGINS
 ARG AUTH_ISSUER_URI
 ARG AUTH_JWK_SET_URI
 
-# Package the application 
-RUN ./mvnw package -DskipTests
+# Install Maven and build the application
+RUN ./mvnw clean package -DskipTests
 
-# Copy the JAR file into the container 
-COPY target/*.jar app.jar
+# Now that the app is built, copy the JAR into the final image
+FROM eclipse-temurin:23-jdk AS runtime
+
+# Set working directory for runtime environment
+WORKDIR /app
+
+# Copy the JAR file built in the previous stage into the runtime container
+COPY --from=build /app/target/*.jar app.jar
 
 # Set runtime environment variables
 ENV SPRING_AI_API_KEY=${SPRING_AI_API_KEY}
@@ -37,8 +45,8 @@ ENV ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
 ENV AUTH_ISSUER_URI=${AUTH_ISSUER_URI}
 ENV AUTH_JWK_SET_URI=${AUTH_JWK_SET_URI}
 
-# Expose port for application
+# Expose the application port
 EXPOSE 8080
 
-# Entry point to run the application
+# Command to run the app when the container starts
 ENTRYPOINT ["java", "-jar", "app.jar"]
