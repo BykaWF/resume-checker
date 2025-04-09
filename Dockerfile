@@ -1,22 +1,45 @@
 FROM eclipse-temurin:23-jdk
 
+# Set working directory
 WORKDIR /app
 
+# Copy necessary files
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
-
-
 COPY src src
 
-# Package the application (skip tests)
+# Set build-time environment variables
+ARG SPRING_AI_API_KEY
+ARG SPRING_AI_COMPLETION_URL
+ARG SPRING_AI_BASE_URL
+ARG RAILWAY_DATABASE_URL
+ARG RAILWAY_DATABASE_USERNAME
+ARG RAILWAY_DATABASE_PASSWORD
+ARG ALLOWED_ORIGINS
+ARG AUTH_ISSUER_URI
+ARG AUTH_JWK_SET_URI
+
+# Package the application
 RUN ./mvnw package -DskipTests
 
-# If your app is packaged as a JAR
-# The path may need to be adjusted based on your build output
+# Copy the JAR file into the container
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 
-# Configure container to run the compiled app
+# Set runtime environment variables
+ENV SPRING_AI_API_KEY=${SPRING_AI_API_KEY}
+ENV SPRING_AI_COMPLETION_URL=${SPRING_AI_COMPLETION_URL}
+ENV SPRING_AI_BASE_URL=${SPRING_AI_BASE_URL}
+ENV RAILWAY_DATABASE_URL=${RAILWAY_DATABASE_URL}
+ENV RAILWAY_DATABASE_USERNAME=${RAILWAY_DATABASE_USERNAME}
+ENV RAILWAY_DATABASE_PASSWORD=${RAILWAY_DATABASE_PASSWORD}
+ENV ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+ENV AUTH_ISSUER_URI=${AUTH_ISSUER_URI}
+ENV AUTH_JWK_SET_URI=${AUTH_JWK_SET_URI}
+
+# Expose port for application
 EXPOSE 8080
+
+# Entry point to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
