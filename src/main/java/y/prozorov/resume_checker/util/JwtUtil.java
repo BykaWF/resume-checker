@@ -8,6 +8,7 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
     public UUID extractUserId(Jwt jwt) {
+        //TODO add in tesing purpouse
         if (jwt == null || jwt.getClaimAsString("sub") == null) {
             throw new IllegalArgumentException("Invalid JWT: Missing subject (sub) claim");
         }
