@@ -36,7 +36,7 @@ jobs:
           region: '${{ env.REGION }}'
           # NOTE: If using a different source folder, update the image name below:
           source: './'
-          env-vars: |
+          secrets: |-
               SPRING_AI_API_KEY=${{ secrets.SPRING_AI_API_KEY }}
               SPRING_AI_COMPLETION_URL=${{ secrets.SPRING_AI_COMPLETION_URL }}
               SPRING_AI_BASE_URL=${{ secrets.SPRING_AI_BASE_URL }}
