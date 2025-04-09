@@ -6,9 +6,9 @@ on:
       - "main"
 
 env:
-  PROJECT_ID: 'r-checker' 
-  REGION: 'europa-central2'
-  SERVICE: 'resume-checker'
+  PROJECT_ID: ${{GCP_PROJECT_ID}} 
+  REGION: ${{GCP_REGION}}
+  SERVICE: ${{GCP_SERVICE_NAME}}
 
 jobs:
   deploy:
@@ -32,7 +32,6 @@ jobs:
         with:
           service: '${{ env.SERVICE }}'
           region: '${{ env.REGION }}'
-          project_id: '${{ secrets.GCP_PROJECT_ID }}'
           # NOTE: If using a different source folder, update the image name below:
           source: './'
 
