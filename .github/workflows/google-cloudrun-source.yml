@@ -36,6 +36,16 @@ jobs:
           region: '${{ env.REGION }}'
           # NOTE: If using a different source folder, update the image name below:
           source: './'
+          env-vars: |
+              SPRING_AI_API_KEY=${{ secrets.SPRING_AI_API_KEY }}
+              SPRING_AI_COMPLETION_URL=${{ secrets.SPRING_AI_COMPLETION_URL }}
+              SPRING_AI_BASE_URL=${{ secrets.SPRING_AI_BASE_URL }}
+              RAILWAY_DATABASE_URL=${{ secrets.RAILWAY_DATABASE_URL }}
+              RAILWAY_DATABASE_USERNAME=${{ secrets.RAILWAY_DATABASE_USERNAME }}
+              RAILWAY_DATABASE_PASSWORD=${{ secrets.RAILWAY_DATABASE_PASSWORD }}
+              ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}
+              AUTH_ISSUER_URI=${{ secrets.AUTH_ISSUER_URI }}
+              AUTH_JWK_SET_URI=${{ secrets.AUTH_JWK_SET_URI }}
 
       # If required, use the Cloud Run URL output in later steps
       - name: 'Show output'
