@@ -42,16 +42,7 @@ jobs:
       - name: 'Build and Push Container'
         run: |-
           DOCKER_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          docker build --tag "$DOCKER_TAG" \
-            --build-arg SPRING_AI_API_KEY=${{ secrets.SPRING_AI_API_KEY }} \
-            --build-arg SPRING_AI_COMPLETION_URL=${{ secrets.SPRING_AI_COMPLETION_URL }} \
-            --build-arg SPRING_AI_BASE_URL=${{ secrets.SPRING_AI_BASE_URL }} \
-            --build-arg RAILWAY_DATABASE_URL=${{ secrets.RAILWAY_DATABASE_URL }} \
-            --build-arg RAILWAY_DATABASE_USERNAME=${{ secrets.RAILWAY_DATABASE_USERNAME }} \
-            --build-arg RAILWAY_DATABASE_PASSWORD=${{ secrets.RAILWAY_DATABASE_PASSWORD }} \
-            --build-arg ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }} \
-            --build-arg AUTH_ISSUER_URI=${{ secrets.AUTH_ISSUER_URI }} \
-            --build-arg AUTH_JWK_SET_URI=${{ secrets.AUTH_JWK_SET_URI }} .
+          docker build --tag "$DOCKER_TAG" .
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ env.REGION }}-docker.pkg.dev
           docker push "$DOCKER_TAG"
 
@@ -61,7 +52,16 @@ jobs:
           service: '${{ env.IMAGE_NAME }}' 
           region: '${{ env.REGION }}'
           image: "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-
+          env_vars: |
+              SPRING_AI_API_KEY=${{ secrets.SPRING_AI_API_KEY }}
+              SPRING_AI_COMPLETION_URL=${{ secrets.SPRING_AI_COMPLETION_URL }}
+              SPRING_AI_BASE_URL=${{ secrets.SPRING_AI_BASE_URL }}
+              RAILWAY_DATABASE_URL=${{ secrets.RAILWAY_DATABASE_URL }}
+              RAILWAY_DATABASE_USERNAME=${{ secrets.RAILWAY_DATABASE_USERNAME }}
+              RAILWAY_DATABASE_PASSWORD=${{ secrets.RAILWAY_DATABASE_PASSWORD }}
+              ALLOWED_ORIGINS=${{ secrets.ALLOWED_ORIGINS }}
+              AUTH_ISSUER_URI=${{ secrets.AUTH_ISSUER_URI }}
+              AUTH_JWK_SET_URI=${{ secrets.AUTH_JWK_SET_URI }}
       - name: 'Show output'
         run: |
           echo ${{ steps.deploy.outputs.url }}
